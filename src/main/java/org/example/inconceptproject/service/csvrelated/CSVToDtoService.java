@@ -14,6 +14,7 @@ import org.example.inconceptproject.model.link.BookSetting;
 import org.example.inconceptproject.repository.BookRepository;
 import org.example.inconceptproject.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +36,9 @@ public class CSVToDtoService {
     private final FormatService formatService;
     private final SeriesService seriesService;
 
-    private static final int THREAD_POOL_SIZE = 10;
+
+    private final ExecutorService executor;
+
     private final AuthorService authorService;
     private final AwardService awardService;
     private final GenreService genreService;
@@ -90,7 +93,6 @@ public class CSVToDtoService {
 
 
     private Set<BookCsvDTO> processBooksInParallel(List<BookCsvDTO> books) throws Exception {
-        ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         List<Future<BookCsvDTO>> futures = new ArrayList<>();
         for (BookCsvDTO book : books) {
             futures.add(executor.submit(() -> process(book)));
